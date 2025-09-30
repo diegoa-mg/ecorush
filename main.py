@@ -98,6 +98,9 @@ personaje2     = load_img("selec_pjder.png")    # Personaje 2
 btn_jugar      = load_img("play_jugar_N.png")                 # Botón play
 nivel_x        = load_img("niv_x.png")
 
+btn_sencillo2 = load_img("btn_sencillo2.png")
+btn_extremo2  = load_img("btn_extremo2.png")
+
 print("Imágenes cargadas correctamente para el selector de nivel") 
 
 # === Escalar las imagenes ===
@@ -128,6 +131,7 @@ boton_config_niv = pygame.transform.scale(boton_config_niv, (119.33, 118.66))
 titulo_niv1     = pygame.transform.scale(titulo_niv1, (1118, 178))
 titulo_niv2     = pygame.transform.scale(titulo_niv2, (1118, 178))
 titulo_niv3     = pygame.transform.scale(titulo_niv3, (1118, 178))
+
 nivel_selector  = pygame.transform.scale(nivel_selector, (709.33, 294.66))
 btn_sencillo     = pygame.transform.scale(btn_sencillo, (184.66, 70.66))
 btn_extremo     = pygame.transform.scale(btn_extremo, (184.66, 70.66))
@@ -135,6 +139,9 @@ personaje1      = pygame.transform.scale(personaje1, (184.66, 116.66))
 personaje2      = pygame.transform.scale(personaje2, (184.66, 116.66))
 btn_jugar       = pygame.transform.scale(btn_jugar, (100, 100))
 nivel_x         = pygame.transform.scale(nivel_x, (34, 33.33))
+
+btn_sencillo2 = pygame.transform.scale(btn_sencillo2, (184.66, 70.66))
+btn_extremo2  = pygame.transform.scale(btn_extremo2, (184.66, 70.66))
 
 # === ANIMACION AL TITULO ===
 def draw_title_animated(screen, base_surf, center_pos, mode="bob", t_ms=0, amp=1.5,): # amp = amplitud px
@@ -164,6 +171,7 @@ botoninicio_orig, botoninicio_hover = make_hover_pair(botoninicio, 1.05)
 botonconfig_orig, botonconfig_hover = make_hover_pair(botonconfig, 1.05)
 botontuto_orig,  botontuto_hover  = make_hover_pair(botontuto,  1.05)
 botonsalir_orig, botonsalir_hover = make_hover_pair(botonsalir, 1.05)
+config_x_orig, config_x_hover = make_hover_pair(config_x, 1.05)
 
 # Botones Menu Niveles
 boton_nivel1_orig, boton_nivel1_hover = make_hover_pair(boton_nivel1, 1.05)
@@ -175,7 +183,10 @@ boton_config_niv_orig, boton_config_niv_hover = make_hover_pair(boton_config_niv
 # Botones Selector Nivel
 btn_sencillo_orig, btn_sencillo_hover = make_hover_pair(btn_sencillo, 1.05)
 btn_extremo_orig, btn_extremo_hover = make_hover_pair(btn_extremo, 1.05)
-# btn_jugar
+btn_jugar_orig, btn_jugar_hover = make_hover_pair(btn_jugar, 1.05)
+personaje1_orig, personaje1_hover = make_hover_pair(personaje1, 1.05)
+personaje2_orig, personaje2_hover = make_hover_pair(personaje2, 1.05)
+nivel_x_orig, nivel_x_hover = make_hover_pair(nivel_x, 1.05)
 
 # === Definir rects de botones (hitboxes) ===
 
@@ -204,6 +215,8 @@ rect_personaje1 = personaje1.get_rect(topleft=(480, 430))
 rect_personaje2 = personaje2.get_rect(topleft=(680, 430))
 rect_jugar = btn_jugar.get_rect(bottomright=(980, 490))
 nivel_x_rect = nivel_x.get_rect(topleft=(945, 315))
+rect_sencillo2 = btn_sencillo2.get_rect(topleft=(480, 330))
+rect_extremo2 = btn_extremo2.get_rect(topleft=(680, 330))
 
 # === Offset Menu Principal (movimiento del fondo menu principal) ===
 bg_width = bg_prin.get_width()
@@ -303,10 +316,10 @@ while running:
             elif game_state == "selector_nivel1" or game_state == "selector_nivel2" or game_state == "selector_nivel3":
                 if rect_sencillo.collidepoint(event.pos):
                     dificultad_seleccionada = "facil"
-                    print("Dificultad: Fácil")
+                    print("Dificultad: Sencillo")
                 elif rect_extremo.collidepoint(event.pos):
                     dificultad_seleccionada = "dificil"
-                    print("Dificultad: Difícil")
+                    print("Dificultad: Extremo")
                 elif rect_personaje1.collidepoint(event.pos):
                     personaje_seleccionado = 1
                     print("Personaje 1 seleccionado")
@@ -414,7 +427,16 @@ while running:
 
         # Dibujar el panel
         screen.blit(config, config_rect.topleft)
-        screen.blit(config_x, config_x_rect.topleft)
+
+        # Posición del mouse para hover
+        mouse_pos = pygame.mouse.get_pos()
+
+        # X
+        if config_x_rect.collidepoint(mouse_pos):
+            r = config_x_hover.get_rect(center=config_x_rect.center)
+            screen.blit(config_x_hover, r.topleft)
+        else:
+            screen.blit(config_x_orig, config_x_rect.topleft)
 
     elif game_state == "tutorial":
         bg_x -= scroll_speed
@@ -442,7 +464,17 @@ while running:
 
         # Dibujar el panel
         screen.blit(tuto, tuto_rect.topleft)
-        screen.blit(config_x, config_x_rect.topleft)
+        
+        # Posición del mouse para hover
+        mouse_pos = pygame.mouse.get_pos()
+
+        # X
+        if config_x_rect.collidepoint(mouse_pos):
+            r = config_x_hover.get_rect(center=config_x_rect.center)
+            screen.blit(config_x_hover, r.topleft)
+        else:
+            screen.blit(config_x_orig, config_x_rect.topleft)
+        
         screen.blit(botones_tuto, (481, 245))
 
     # === Menú de niveles ===
@@ -523,7 +555,16 @@ while running:
 
         # Dibujar el panel
         screen.blit(config, config_rect.topleft)
-        screen.blit(config_x, config_x_rect.topleft)
+        
+        # Posición del mouse para hover
+        mouse_pos = pygame.mouse.get_pos()
+
+        # X
+        if config_x_rect.collidepoint(mouse_pos):
+            r = config_x_hover.get_rect(center=config_x_rect.center)
+            screen.blit(config_x_hover, r.topleft)
+        else:
+            screen.blit(config_x_orig, config_x_rect.topleft)
 
     # === Selector de nivel individual ===
     elif game_state == "selector_nivel1":
@@ -547,16 +588,54 @@ while running:
         screen.blit(nivel_selector, nivel_selector_rect.topleft)
         screen.blit(nivel_x, nivel_x_rect.topleft)
 
-        # Botones de dificultad
-        screen.blit(btn_sencillo, rect_sencillo.topleft)
-        screen.blit(btn_extremo, rect_extremo.topleft)
+        # Posición del mouse para hover
+        mouse_pos = pygame.mouse.get_pos()
 
-        # Personajes
-        screen.blit(personaje1, rect_personaje1.topleft)
-        screen.blit(personaje2, rect_personaje2.topleft)
+        # BOTON SENCILLO
+        if rect_sencillo.collidepoint(mouse_pos):
+            r = btn_sencillo_hover.get_rect(center=rect_sencillo.center)
+            screen.blit(btn_sencillo_hover, r.topleft)
+        else:
+            screen.blit(btn_sencillo_orig, rect_sencillo.topleft)
+        
+        if rect_sencillo.collidepoint(event.pos):
+            screen.blit(btn_sencillo2, rect_sencillo2.topleft)
 
-        # Botón jugar
-        screen.blit(btn_jugar, rect_jugar.topleft)
+        # BOTON EXTREMO
+        if rect_extremo.collidepoint(mouse_pos):
+            r = btn_extremo_hover.get_rect(center=rect_extremo.center)
+            screen.blit(btn_extremo_hover, r.topleft)
+        else:
+            screen.blit(btn_extremo_orig, rect_extremo.topleft)
+
+        # BOTON PERSONAJE 1
+        if rect_personaje1.collidepoint(mouse_pos):
+            r = personaje1_hover.get_rect(center=rect_personaje1.center)
+            screen.blit(personaje1_hover, r.topleft)
+        else:
+            screen.blit(personaje1_orig, rect_personaje1.topleft)
+
+        # BOTON PERSONAJE 2
+        if rect_personaje2.collidepoint(mouse_pos):
+            r = personaje2_hover.get_rect(center=rect_personaje2.center)
+            screen.blit(personaje2_hover, r.topleft)
+        else:
+            screen.blit(personaje2_orig, rect_personaje2.topleft)
+
+        # BOTON JUGAR
+        if rect_jugar.collidepoint(mouse_pos):
+            r = btn_jugar_hover.get_rect(center=rect_jugar.center)
+            screen.blit(btn_jugar_hover, r.topleft)
+        else:
+            screen.blit(btn_jugar_orig, rect_jugar.topleft)
+
+        # X
+        if nivel_x_rect.collidepoint(mouse_pos):
+            r = nivel_x_hover.get_rect(center=nivel_x_rect.center)
+            screen.blit(nivel_x_hover, r.topleft)
+        else:
+            screen.blit(nivel_x_orig, nivel_x_rect.topleft)
+        
 
     elif game_state == "selector_nivel2":
         # Actualizar posicion del fondo    
@@ -578,16 +657,50 @@ while running:
         screen.blit(nivel_selector, nivel_selector_rect.topleft)
         screen.blit(nivel_x, nivel_x_rect.topleft)
 
-        # Botones de dificultad
-        screen.blit(btn_sencillo, rect_sencillo.topleft)
-        screen.blit(btn_extremo, rect_extremo.topleft)
+        # Posición del mouse para hover
+        mouse_pos = pygame.mouse.get_pos()
 
-        # Personajes
-        screen.blit(personaje1, rect_personaje1.topleft)
-        screen.blit(personaje2, rect_personaje2.topleft)
+        # BOTON SENCILLO
+        if rect_sencillo.collidepoint(mouse_pos):
+            r = btn_sencillo_hover.get_rect(center=rect_sencillo.center)
+            screen.blit(btn_sencillo_hover, r.topleft)
+        else:
+            screen.blit(btn_sencillo_orig, rect_sencillo.topleft)
 
-        # Botón jugar
-        screen.blit(btn_jugar, rect_jugar.topleft)
+        # BOTON EXTREMO
+        if rect_extremo.collidepoint(mouse_pos):
+            r = btn_extremo_hover.get_rect(center=rect_extremo.center)
+            screen.blit(btn_extremo_hover, r.topleft)
+        else:
+            screen.blit(btn_extremo_orig, rect_extremo.topleft)
+
+        # BOTON PERSONAJE 1
+        if rect_personaje1.collidepoint(mouse_pos):
+            r = personaje1_hover.get_rect(center=rect_personaje1.center)
+            screen.blit(personaje1_hover, r.topleft)
+        else:
+            screen.blit(personaje1_orig, rect_personaje1.topleft)
+
+        # BOTON PERSONAJE 2
+        if rect_personaje2.collidepoint(mouse_pos):
+            r = personaje2_hover.get_rect(center=rect_personaje2.center)
+            screen.blit(personaje2_hover, r.topleft)
+        else:
+            screen.blit(personaje2_orig, rect_personaje2.topleft)
+
+        # BOTON JUGAR
+        if rect_jugar.collidepoint(mouse_pos):
+            r = btn_jugar_hover.get_rect(center=rect_jugar.center)
+            screen.blit(btn_jugar_hover, r.topleft)
+        else:
+            screen.blit(btn_jugar_orig, rect_jugar.topleft)
+
+        # X
+        if nivel_x_rect.collidepoint(mouse_pos):
+            r = nivel_x_hover.get_rect(center=nivel_x_rect.center)
+            screen.blit(nivel_x_hover, r.topleft)
+        else:
+            screen.blit(nivel_x_orig, nivel_x_rect.topleft)
 
     elif game_state == "selector_nivel3":
         # Actualizar posicion del fondo    
@@ -609,16 +722,50 @@ while running:
         screen.blit(nivel_selector, nivel_selector_rect.topleft)
         screen.blit(nivel_x, nivel_x_rect.topleft)
 
-        # Botones de dificultad
-        screen.blit(btn_sencillo, rect_sencillo.topleft)
-        screen.blit(btn_extremo, rect_extremo.topleft)
+        # Posición del mouse para hover
+        mouse_pos = pygame.mouse.get_pos()
 
-        # Personajes
-        screen.blit(personaje1, rect_personaje1.topleft)
-        screen.blit(personaje2, rect_personaje2.topleft)
+        # BOTON SENCILLO
+        if rect_sencillo.collidepoint(mouse_pos):
+            r = btn_sencillo_hover.get_rect(center=rect_sencillo.center)
+            screen.blit(btn_sencillo_hover, r.topleft)
+        else:
+            screen.blit(btn_sencillo_orig, rect_sencillo.topleft)
 
-        # Botón jugar
-        screen.blit(btn_jugar, rect_jugar.topleft)
+        # BOTON EXTREMO
+        if rect_extremo.collidepoint(mouse_pos):
+            r = btn_extremo_hover.get_rect(center=rect_extremo.center)
+            screen.blit(btn_extremo_hover, r.topleft)
+        else:
+            screen.blit(btn_extremo_orig, rect_extremo.topleft)
+
+        # BOTON PERSONAJE 1
+        if rect_personaje1.collidepoint(mouse_pos):
+            r = personaje1_hover.get_rect(center=rect_personaje1.center)
+            screen.blit(personaje1_hover, r.topleft)
+        else:
+            screen.blit(personaje1_orig, rect_personaje1.topleft)
+
+        # BOTON PERSONAJE 2
+        if rect_personaje2.collidepoint(mouse_pos):
+            r = personaje2_hover.get_rect(center=rect_personaje2.center)
+            screen.blit(personaje2_hover, r.topleft)
+        else:
+            screen.blit(personaje2_orig, rect_personaje2.topleft)
+
+        # BOTON JUGAR
+        if rect_jugar.collidepoint(mouse_pos):
+            r = btn_jugar_hover.get_rect(center=rect_jugar.center)
+            screen.blit(btn_jugar_hover, r.topleft)
+        else:
+            screen.blit(btn_jugar_orig, rect_jugar.topleft)
+
+        # X
+        if nivel_x_rect.collidepoint(mouse_pos):
+            r = nivel_x_hover.get_rect(center=nivel_x_rect.center)
+            screen.blit(nivel_x_hover, r.topleft)
+        else:
+            screen.blit(nivel_x_orig, nivel_x_rect.topleft)
 
     # === NIVELES (pantallas de carga/placeholder) ===
     elif game_state == "juego_nivel1":
