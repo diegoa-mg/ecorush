@@ -53,15 +53,15 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_a]: self.rect.move_ip(-5, 0)
         if pressed_keys[K_d]: self.rect.move_ip(5, 0)
 
-        if pressed_keys[K_LSHIFT]:  # correr más rápido
-            if pressed_keys[K_UP]: self.rect.move_ip(0, -8)
-            if pressed_keys[K_DOWN]: self.rect.move_ip(0, 8)
-            if pressed_keys[K_LEFT]: self.rect.move_ip(-8, 0)
-            if pressed_keys[K_RIGHT]: self.rect.move_ip(8, 0)
-            if pressed_keys[K_w]: self.rect.move_ip(0, -8)
-            if pressed_keys[K_s]: self.rect.move_ip(0, 8)
-            if pressed_keys[K_a]: self.rect.move_ip(-8, 0)
-            if pressed_keys[K_d]: self.rect.move_ip(8, 0)
+        if pressed_keys[K_LSHIFT]:  # correr más rápido (Falta crear una barra de energia para que esto no sea ilimitado)
+            if pressed_keys[K_UP]: self.rect.move_ip(0, -6.5)
+            if pressed_keys[K_DOWN]: self.rect.move_ip(0, 6.5)
+            if pressed_keys[K_LEFT]: self.rect.move_ip(-6.5, 0)
+            if pressed_keys[K_RIGHT]: self.rect.move_ip(6.5, 0)
+            if pressed_keys[K_w]: self.rect.move_ip(0, -6.5)
+            if pressed_keys[K_s]: self.rect.move_ip(0, 6.5)
+            if pressed_keys[K_a]: self.rect.move_ip(-6.5, 0)
+            if pressed_keys[K_d]: self.rect.move_ip(6.5, 0)
 
         self.rect.clamp_ip(screen.get_rect())  # no salir de pantalla
 
@@ -141,7 +141,7 @@ while running:
     screen.blit(timer_text, (WIDTH//2 - timer_text.get_width()//2, 20))
 
     if super_boton_visible:
-        boton_text = font.render("SUPER BOTON (E)", True, GREEN)
+        boton_text = font.render("Pulsa E", True, GREEN)
         screen.blit(boton_text, (player.rect.centerx - boton_text.get_width()//2,
                                  player.rect.top - 40))
 
