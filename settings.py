@@ -60,3 +60,39 @@ def make_hover_pair(surf, scale=1.05):
     w, h = surf.get_size()
     hover = pygame.transform.smoothscale(surf, (int(w*scale), int(h*scale)))
     return surf, hover
+
+# === Transiciones ===
+def fade_to_black(screen, duration_ms=150):
+    """Escena visible → negro."""
+    overlay = pygame.Surface((WIDTH, HEIGHT)).convert()
+    overlay.fill((0, 0, 0))
+    clk = pygame.time.Clock()
+    t = 0
+    while t < duration_ms:
+        alpha = int(255 * (t / duration_ms))      # 0 → 255
+        overlay.set_alpha(alpha)
+        screen.blit(overlay, (0, 0))
+        pygame.display.flip()
+        t += clk.tick(FPS)                        # usa tu FPS global
+
+
+def fade_from_black(screen, duration_ms=150):
+    """Negro → escena visible."""
+    overlay = pygame.Surface((WIDTH, HEIGHT)).convert()
+    overlay.fill((0, 0, 0))
+    clk = pygame.time.Clock()
+    t = 0
+    while t < duration_ms:
+        alpha = int(255 - 255 * (t / duration_ms))  # 255 → 0
+        overlay.set_alpha(alpha)
+        screen.blit(overlay, (0, 0))
+        pygame.display.flip()
+        t += clk.tick(FPS)
+
+
+def with_fade(run_fn, in_ms=150, out_ms=150):
+    """Aplica fade-in automático al entrar a una escena."""
+    def _wrapped(screen, clock):
+        fade_from_black(screen, in_ms)
+        return run_fn(screen, clock)
+    return _wrapped

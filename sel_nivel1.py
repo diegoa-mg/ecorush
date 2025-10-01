@@ -1,5 +1,5 @@
 import pygame, os, math, sys
-from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair, draw_title_animated
+from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair
 
 def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     # === Cargar imagenes ===
@@ -15,11 +15,13 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
     btn_sencillo2 = load_img("btn_sencillo2.png")
     btn_extremo2  = load_img("btn_extremo2.png")
+    personaje1_2 = load_img("selec_pjizq2.png")
+    personaje2_2 = load_img("selec_pjder2.png")
 
     # === Escalar las imagenes ===
     bg_niv         = pygame.transform.scale(bg_niv, (2560, 720))
     titulo_niv1     = pygame.transform.scale(titulo_niv1, (1118, 178))
-    
+
     nivel_selector  = pygame.transform.scale(nivel_selector, (709.33, 294.66))
     btn_sencillo     = pygame.transform.scale(btn_sencillo, (184.66, 70.66))
     btn_extremo     = pygame.transform.scale(btn_extremo, (184.66, 70.66))
@@ -30,6 +32,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
     btn_sencillo2 = pygame.transform.scale(btn_sencillo2, (184.66, 70.66))
     btn_extremo2  = pygame.transform.scale(btn_extremo2, (184.66, 70.66))
+    personaje1_2      = pygame.transform.scale(personaje1_2, (184.66, 116.66))
+    personaje2_2      = pygame.transform.scale(personaje2_2, (184.66, 116.66))
 
     # === BOTONES ANIMADOS ===
     btn_sencillo_orig, btn_sencillo_hover = make_hover_pair(btn_sencillo, 1.05)
@@ -49,6 +53,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     nivel_x_rect = nivel_x.get_rect(topleft=(945, 315))
     rect_sencillo2 = btn_sencillo2.get_rect(topleft=(480, 330))
     rect_extremo2 = btn_extremo2.get_rect(topleft=(680, 330))
+    rect_personaje1_2 = personaje1_2.get_rect(topleft=(480, 430))
+    rect_personaje2_2 = personaje2_2.get_rect(topleft=(680, 430))
 
     # === Offset Menu Niveles (movimiento del fondo menu niveles) ===
     bg_niv_width = bg_niv.get_width()

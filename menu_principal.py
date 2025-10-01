@@ -2,7 +2,6 @@ import pygame, os, math, sys
 from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair, draw_title_animated
 
 def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
-    
     # === Cargar imágenes ===
     bg_prin      = load_img("fondoprinci.png", alpha=False) # Se pone ya que no necesita transparencia
     titulo       = load_img("titulo.png")

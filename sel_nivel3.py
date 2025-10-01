@@ -1,5 +1,5 @@
 import pygame, os, math, sys
-from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair, draw_title_animated
+from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair
 
 def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     # === Cargar imagenes ===
