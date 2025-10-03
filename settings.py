@@ -75,7 +75,6 @@ def fade_to_black(screen, duration_ms=150):
         pygame.display.flip()
         t += clk.tick(FPS)                        # usa tu FPS global
 
-
 def fade_from_black(screen, duration_ms=150):
     """Negro → escena visible."""
     overlay = pygame.Surface((WIDTH, HEIGHT)).convert()
@@ -89,10 +88,18 @@ def fade_from_black(screen, duration_ms=150):
         pygame.display.flip()
         t += clk.tick(FPS)
 
-
-def with_fade(run_fn, in_ms=150, out_ms=150):
+def with_fade(run_fn, in_ms=100, out_ms=100):
     """Aplica fade-in automático al entrar a una escena."""
     def _wrapped(screen, clock):
         fade_from_black(screen, in_ms)
         return run_fn(screen, clock)
     return _wrapped
+
+def blit_hoverable(screen, surf_base, rect_base, mouse_pos):
+        if rect_base.collidepoint(mouse_pos):
+            w, h = surf_base.get_size()
+            hover = pygame.transform.smoothscale(surf_base, (int(w*1.05), int(h*1.05)))
+            r = hover.get_rect(center=rect_base.center)
+            screen.blit(hover, r.topleft)
+        else:
+            screen.blit(surf_base, rect_base.topleft)

@@ -1,5 +1,5 @@
 import pygame, os, math, sys
-from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair
+from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair, blit_hoverable
 
 def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     # === Cargar imagenes ===
@@ -140,6 +140,23 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             # Posición del mouse para hover
             mouse_pos = pygame.mouse.get_pos()
 
+            mouse_pos = pygame.mouse.get_pos()
+
+            # Dificultad: elige la imagen en base al estado
+            sencillo_img = btn_sencillo2 if dificultad_seleccionada == "facil" else btn_sencillo
+            extremo_img  = btn_extremo2  if dificultad_seleccionada == "dificil" else btn_extremo
+
+            blit_hoverable(screen, sencillo_img, rect_sencillo, mouse_pos)
+            blit_hoverable(screen, extremo_img,  rect_extremo,  mouse_pos)
+
+            # Personajes
+            pj1_img = personaje1_2 if personaje_seleccionado == 1 else personaje1
+            pj2_img = personaje2_2 if personaje_seleccionado == 2 else personaje2
+
+            blit_hoverable(screen, pj1_img, rect_personaje1, mouse_pos)
+            blit_hoverable(screen, pj2_img, rect_personaje2, mouse_pos)
+
+            """
             # BOTON SENCILLO
             if rect_sencillo.collidepoint(mouse_pos):
                 r = btn_sencillo_hover.get_rect(center=rect_sencillo.center)
@@ -170,6 +187,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                 screen.blit(personaje2_hover, r.topleft)
             else:
                 screen.blit(personaje2_orig, rect_personaje2.topleft)
+            """
 
             # BOTON JUGAR
             if rect_jugar.collidepoint(mouse_pos):
