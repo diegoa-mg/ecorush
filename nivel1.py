@@ -266,8 +266,16 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
         pygame.display.flip()
 
         # === Condiciones de fin de juego ===
-        if time_left <= 0 or all(not obj.encendido for obj in objetos):
-            end_text = font.render("¡Fin del nivel!", True, RED) # MENSAJE TEMPORAL
+        if time_left <= 0:
+            end_text = font.render("PERDISTE", True, RED) # MENSAJE TEMPORAL
+            screen.fill(BLACK)
+            screen.blit(end_text, (WIDTH//2 - end_text.get_width()//2, HEIGHT//2))
+            pygame.display.flip()
+            pygame.time.delay(2000)
+            return "niveles"
+        
+        elif all(not obj.encendido for obj in objetos):
+            end_text = font.render("GANASTE", True, WHITE) # MENSAJE TEMPORAL
             screen.fill(BLACK)
             screen.blit(end_text, (WIDTH//2 - end_text.get_width()//2, HEIGHT//2))
             pygame.display.flip()
