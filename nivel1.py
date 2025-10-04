@@ -187,6 +187,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     START_TIME = 3 * 60  # 3 minutos en segundos
     start_ticks = pygame.time.get_ticks()
 
+    game_state = "juego" # juego, pausa, config
+
     running = True
     while running:
         clock.tick(FPS)

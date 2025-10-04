@@ -24,7 +24,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     config       = pygame.transform.scale(config, (860, 488.66))
     config_x     = pygame.transform.scale(config_x, (34, 33.33))
     tuto         = pygame.transform.scale(tuto, (863.33, 485.33))
-    botones_tuto = pygame.transform.scale(botones_tuto, (318, 251.33))
+    botones_tuto = pygame.transform.scale(botones_tuto, (618, 320.66))
 
     # === Animacion de botones ===
     botoninicio_orig, botoninicio_hover = make_hover_pair(botoninicio, 1.05)
@@ -230,7 +230,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             else:
                 screen.blit(config_x_orig, config_x_rect.topleft)
             
-            screen.blit(botones_tuto, (481, 245))
+            screen.blit(botones_tuto, (323, 245))
 
         pygame.display.flip()
     
