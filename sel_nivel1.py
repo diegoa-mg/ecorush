@@ -140,11 +140,9 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             # Posición del mouse para hover
             mouse_pos = pygame.mouse.get_pos()
 
-            mouse_pos = pygame.mouse.get_pos()
-
             # Dificultad: elige la imagen en base al estado
-            sencillo_img = btn_sencillo2 if dificultad_seleccionada == "facil" else btn_sencillo
-            extremo_img  = btn_extremo2  if dificultad_seleccionada == "dificil" else btn_extremo
+            sencillo_img = btn_sencillo2 if dificultad_seleccionada == "sencillo" else btn_sencillo
+            extremo_img  = btn_extremo2  if dificultad_seleccionada == "extremo" else btn_extremo
 
             blit_hoverable(screen, sencillo_img, rect_sencillo, mouse_pos)
             blit_hoverable(screen, extremo_img,  rect_extremo,  mouse_pos)
@@ -155,39 +153,6 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             blit_hoverable(screen, pj1_img, rect_personaje1, mouse_pos)
             blit_hoverable(screen, pj2_img, rect_personaje2, mouse_pos)
-
-            """
-            # BOTON SENCILLO
-            if rect_sencillo.collidepoint(mouse_pos):
-                r = btn_sencillo_hover.get_rect(center=rect_sencillo.center)
-                screen.blit(btn_sencillo_hover, r.topleft)
-            else:
-                screen.blit(btn_sencillo_orig, rect_sencillo.topleft)
-            
-            if rect_sencillo.collidepoint(event.pos):
-                screen.blit(btn_sencillo2, rect_sencillo2.topleft)
-
-            # BOTON EXTREMO
-            if rect_extremo.collidepoint(mouse_pos):
-                r = btn_extremo_hover.get_rect(center=rect_extremo.center)
-                screen.blit(btn_extremo_hover, r.topleft)
-            else:
-                screen.blit(btn_extremo_orig, rect_extremo.topleft)
-
-            # BOTON PERSONAJE 1
-            if rect_personaje1.collidepoint(mouse_pos):
-                r = personaje1_hover.get_rect(center=rect_personaje1.center)
-                screen.blit(personaje1_hover, r.topleft)
-            else:
-                screen.blit(personaje1_orig, rect_personaje1.topleft)
-
-            # BOTON PERSONAJE 2
-            if rect_personaje2.collidepoint(mouse_pos):
-                r = personaje2_hover.get_rect(center=rect_personaje2.center)
-                screen.blit(personaje2_hover, r.topleft)
-            else:
-                screen.blit(personaje2_orig, rect_personaje2.topleft)
-            """
 
             # BOTON JUGAR
             if rect_jugar.collidepoint(mouse_pos):

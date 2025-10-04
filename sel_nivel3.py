@@ -1,5 +1,5 @@
 import pygame, os, math, sys
-from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair
+from settings import WIDTH, HEIGHT, FPS, load_img, make_blur, make_hover_pair, blit_hoverable
 
 def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     # === Cargar imagenes ===
@@ -15,6 +15,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
     btn_sencillo2 = load_img("btn_sencillo2.png")
     btn_extremo2  = load_img("btn_extremo2.png")
+    personaje1_2 = load_img("selec_pjizq2.png")
+    personaje2_2 = load_img("selec_pjder2.png")
 
     # === Escalar las imagenes ===
     bg_niv         = pygame.transform.scale(bg_niv, (2560, 720))
@@ -30,6 +32,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
     btn_sencillo2 = pygame.transform.scale(btn_sencillo2, (184.66, 70.66))
     btn_extremo2  = pygame.transform.scale(btn_extremo2, (184.66, 70.66))
+    personaje1_2      = pygame.transform.scale(personaje1_2, (184.66, 116.66))
+    personaje2_2      = pygame.transform.scale(personaje2_2, (184.66, 116.66))
 
     # === BOTONES ANIMADOS ===
     btn_sencillo_orig, btn_sencillo_hover = make_hover_pair(btn_sencillo, 1.05)
@@ -49,6 +53,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     nivel_x_rect = nivel_x.get_rect(topleft=(945, 315))
     rect_sencillo2 = btn_sencillo2.get_rect(topleft=(480, 330))
     rect_extremo2 = btn_extremo2.get_rect(topleft=(680, 330))
+    rect_personaje1_2 = personaje1_2.get_rect(topleft=(480, 430))
+    rect_personaje2_2 = personaje2_2.get_rect(topleft=(680, 430))
 
     # === Offset Menu Niveles (movimiento del fondo menu niveles) ===
     bg_niv_width = bg_niv.get_width()
@@ -134,36 +140,19 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             # Posición del mouse para hover
             mouse_pos = pygame.mouse.get_pos()
 
-            # BOTON SENCILLO
-            if rect_sencillo.collidepoint(mouse_pos):
-                r = btn_sencillo_hover.get_rect(center=rect_sencillo.center)
-                screen.blit(btn_sencillo_hover, r.topleft)
-            else:
-                screen.blit(btn_sencillo_orig, rect_sencillo.topleft)
-            
-            if rect_sencillo.collidepoint(event.pos):
-                screen.blit(btn_sencillo2, rect_sencillo2.topleft)
+            # Dificultad: elige la imagen en base al estado
+            sencillo_img = btn_sencillo2 if dificultad_seleccionada == "sencillo" else btn_sencillo
+            extremo_img  = btn_extremo2  if dificultad_seleccionada == "extremo" else btn_extremo
 
-            # BOTON EXTREMO
-            if rect_extremo.collidepoint(mouse_pos):
-                r = btn_extremo_hover.get_rect(center=rect_extremo.center)
-                screen.blit(btn_extremo_hover, r.topleft)
-            else:
-                screen.blit(btn_extremo_orig, rect_extremo.topleft)
+            blit_hoverable(screen, sencillo_img, rect_sencillo, mouse_pos)
+            blit_hoverable(screen, extremo_img,  rect_extremo,  mouse_pos)
 
-            # BOTON PERSONAJE 1
-            if rect_personaje1.collidepoint(mouse_pos):
-                r = personaje1_hover.get_rect(center=rect_personaje1.center)
-                screen.blit(personaje1_hover, r.topleft)
-            else:
-                screen.blit(personaje1_orig, rect_personaje1.topleft)
+            # Personajes
+            pj1_img = personaje1_2 if personaje_seleccionado == 1 else personaje1
+            pj2_img = personaje2_2 if personaje_seleccionado == 2 else personaje2
 
-            # BOTON PERSONAJE 2
-            if rect_personaje2.collidepoint(mouse_pos):
-                r = personaje2_hover.get_rect(center=rect_personaje2.center)
-                screen.blit(personaje2_hover, r.topleft)
-            else:
-                screen.blit(personaje2_orig, rect_personaje2.topleft)
+            blit_hoverable(screen, pj1_img, rect_personaje1, mouse_pos)
+            blit_hoverable(screen, pj2_img, rect_personaje2, mouse_pos)
 
             # BOTON JUGAR
             if rect_jugar.collidepoint(mouse_pos):
