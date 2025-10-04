@@ -5,6 +5,12 @@ import menu_niveles
 import sel_nivel1
 import sel_nivel2
 import sel_nivel3
+import nivel1
+# import nivel1_extremo
+# import nivel2_sencillo
+# import nivel2_extremo
+# import nivel3_sencillo
+# import nivel3_extremo
 
 def main():
     pygame.init()
@@ -13,11 +19,12 @@ def main():
     clock = pygame.time.Clock()
 
     SCENES = {
-        "menu":        with_fade(menu_principal.run, in_ms=160),
-        "niveles":     with_fade(menu_niveles.run,   in_ms=160),
-        "sel_nivel1":  with_fade(sel_nivel1.run,     in_ms=160),
-        "sel_nivel2":  with_fade(sel_nivel2.run,     in_ms=160),
-        "sel_nivel3":  with_fade(sel_nivel3.run,     in_ms=160),
+        "menu":        menu_principal.run,
+        "niveles":     menu_niveles.run,
+        "sel_nivel1":  sel_nivel1.run,
+        "sel_nivel2":  sel_nivel2.run,
+        "sel_nivel3":  sel_nivel3.run,
+        "nivel1":      with_fade(nivel1.run, in_ms=100),
     }
 
     # Arranca en el menú principal
