@@ -104,6 +104,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                         print("Personaje 2 seleccionado")
                     elif rect_jugar.collidepoint(event.pos):
                         print(f"Iniciando Nivel {nivel_seleccionado} - Dificultad: {dificultad_seleccionada} - Personaje: {personaje_seleccionado}")
+                        return "nivel1"
                     
                     # Regresar a niveles
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
