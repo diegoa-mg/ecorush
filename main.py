@@ -11,16 +11,11 @@ import nivel1
 # import nivel2_extremo
 # import nivel3_sencillo
 # import nivel3_extremo
-import nivel1
-# import nivel1_extremo
-# import nivel2_sencillo
-# import nivel2_extremo
-# import nivel3_sencillo
-# import nivel3_extremo
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    # Pantalla completa: screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN | pygame.SCALED)
     pygame.display.set_caption("EcoRush!")
     clock = pygame.time.Clock()
 
