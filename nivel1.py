@@ -17,6 +17,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     MAPA                = load_img("mapafinal.png")
     img_temporizador    = load_img("temporizador.png")
     img_advertencia     = load_img("advertencia_objetos.png")
+    pantalla_ganador    = load_img("ganador.png")
+    pantalla_perdedor   = load_img("perdedor.png")
 
     # Objetos/muebles/aparatos
     img_estante = load_img("estante.png")
@@ -37,6 +39,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     img_boton_E         = pygame.transform.scale(img_boton_E, (50, 50))
     img_temporizador    = pygame.transform.scale(img_temporizador, (180, 80))
     img_advertencia     = pygame.transform.scale(img_advertencia, (50, 50))
+    pantalla_ganador    = pygame.transform.scale(pantalla_ganador, (WIDTH, HEIGHT))
+    pantalla_perdedor   = pygame.transform.scale(pantalla_perdedor, (WIDTH, HEIGHT))
 
     # Objetos/muebles/aparatos
     img_estante = pygame.transform.scale(img_estante, (100, 100)) 
@@ -419,17 +423,35 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
         # === Condiciones de fin de juego ===
         if time_left <= 0:
-            end_text = font.render("PERDISTE", True, RED) # MENSAJE TEMPORAL
-            screen.fill(BLACK)
-            screen.blit(end_text, (WIDTH//2 - end_text.get_width()//2, HEIGHT//2))
+            snapshot = screen.copy()
+            paused_bg = make_blur(snapshot, factor=0.4, passes=2)
+
+            # Fondo (nivel) con blur
+            screen.blit(paused_bg, (0, 0))
+
+            # (Opcional) oscurecer un poco encima
+            overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 110))
+            screen.blit(overlay, (0, 0))
+
+            screen.blit(pantalla_perdedor, (0,0))
             pygame.display.flip()
-            pygame.time.delay(2000)
+            pygame.time.delay(3000)
             return "niveles"
         
         elif all(not obj.encendido for obj in objetos):
-            end_text = font.render("GANASTE", True, WHITE) # MENSAJE TEMPORAL
-            screen.fill(BLACK)
-            screen.blit(end_text, (WIDTH//2 - end_text.get_width()//2, HEIGHT//2))
+            snapshot = screen.copy()
+            paused_bg = make_blur(snapshot, factor=0.4, passes=2)
+            
+            # Fondo (nivel) con blur
+            screen.blit(paused_bg, (0, 0))
+
+            # (Opcional) oscurecer un poco encima
+            overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, 110))
+            screen.blit(overlay, (0, 0))
+
+            screen.blit(pantalla_ganador, (0,0))
             pygame.display.flip()
-            pygame.time.delay(2000)
+            pygame.time.delay(3000)
             return "niveles"
