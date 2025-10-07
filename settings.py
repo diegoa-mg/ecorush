@@ -10,6 +10,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW= (255, 255, 0)
 
+ENERGIA_COLOR= (255, 175, 0)
+
 # === Configurar la ventana ===
 FPS = 60 
 WIDTH, HEIGHT = 1280, 720
