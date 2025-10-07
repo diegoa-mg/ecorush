@@ -86,7 +86,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     decorativos = gestor_decorativos.crear_decorativos_por_defecto()
 
     # Fuente
-    font = pygame.font.SysFont("Arial", 36)
+    FONT_PATH = Path(__file__).parent / "assets" / "fonts" / "horizon.otf"
+    font = pygame.font.Font(str(FONT_PATH), 26)  # 26 = tamaño 
 
     # Crear una máscara de colisión desde el mapa original
     # Crear superficie base sin transparencia
@@ -380,7 +381,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             minutes = time_left // 60
             seconds = time_left % 60
-            color = WHITE if time_left > 30 else RED
+            color = WHITE if time_left > 15 else RED
             timer_text = font.render(f"{minutes:02}:{seconds:02}", True, color)
 
            # === Detectar colisión con algún objeto ===
@@ -423,8 +424,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             # Texto del tiempo (negro con borde blanco para efecto 2D)
             timer_str = f"{minutes:02}:{seconds:02}"
-            base_text = font.render(timer_str, True, BLACK)   # texto negro
-            outline = font.render(timer_str, True, WHITE)     # borde blanco
+            base_text = font.render(timer_str, True, WHITE)   # texto negro
 
             # Dibujar barra de energia y boton de pausa
             screen.blit(barra_energia_atras, (30, 30))
@@ -449,12 +449,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             else:
                 screen.blit(btn_pausa_orig, rect_pausa.topleft)
 
-            # Dibujar bordes alrededor (efecto 2D)
-            for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
-                screen.blit(outline, (timer_rect.centerx - outline.get_width()//2 + dx,
-                                    timer_rect.centery - outline.get_height()//2 + dy))
-
-            # Dibujar el texto principal
+            # Dibujar el texto principal del timer
             screen.blit(base_text, (timer_rect.centerx - base_text.get_width()//2,
                                     timer_rect.centery - base_text.get_height()//2))
 
