@@ -7,7 +7,7 @@ from pathlib import Path
 POSICIONES_OBJETOS = {
     "airedeventanaencendido": (1200, 475),
     "lamparaencendida": (1200, 614),
-    "refrigerador encendido": (865, 35),
+    "refrigerador encendido": (865, 25),
     "tarjallenadeagua": (400, 30),
     "pcencendida": (925, 225),
     "ventiladorencendido": (280, 240),

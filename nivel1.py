@@ -1,6 +1,6 @@
 import pygame
 from pathlib import Path
-from settings import WIDTH, HEIGHT, FPS, BLACK, WHITE, RED, YELLOW, load_img, make_hover_pair, make_blur
+from settings import WIDTH, HEIGHT, FPS, BLACK, WHITE, RED, YELLOW, ENERGIA_COLOR, load_img, make_hover_pair, make_blur
 from movimiento_de_personaje import AnimacionPersonaje
 from objetos_interactuables import GestorObjetosInteractuables
 from objetos_decorativos import GestorObjetosDecorativos
@@ -167,9 +167,6 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
         return False
 
-    # Variable de energia
-    MAX_ENERGY = 100
-
     # === Jugador ===
     class Player(pygame.sprite.Sprite):
         def __init__(self):
@@ -182,6 +179,29 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             self.surf = self.animacion.obtener_frame_actual()
             self.rect = self.surf.get_rect(center=(WIDTH//2, HEIGHT//2))
 
+            # ENERGÍA
+            self.energy = 100  
+            self.energy_max = 100 # MAX_ENERGY
+
+        def add_energy(self, amount: float):
+            self.energy = max(0, min(self.energy + amount, self.energy_max))
+
+        def draw_energy_bar(self, screen, x=30, y=30, w=174, h=51,
+                            bg_img=None, fg_img=None, color=ENERGIA_COLOR):
+            # fondo (detrás)
+            if bg_img:
+                screen.blit(bg_img, (x, y))
+            # barra rellena (un rectángulo recortado al ancho)
+            pct = self.energy / self.energy_max
+            inner_margin = 6  # ajusta al arte de tu barra
+            fill_rect = pygame.Rect(x + inner_margin, y + inner_margin,
+                                    int((w - inner_margin*2) * pct),
+                                    h - inner_margin*2)
+            pygame.draw.rect(screen, color, fill_rect, border_radius=4)
+            # marco (encima)
+            if fg_img:
+                screen.blit(fg_img, (x, y))
+
         def update(self, pressed_keys):
             # Guardar la posición actual para poder volver a ella si hay colisión
             old_rect = self.rect.copy()
@@ -192,19 +212,16 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             # Movimiento normal
             if pressed_keys[K_UP] or pressed_keys[K_w]: 
                 self.rect.move_ip(0, -5)
-               
                 if colisiona_con_obstaculo(self.rect):
                     self.rect = old_rect
                     
             if pressed_keys[K_DOWN] or pressed_keys[K_s]: 
                 self.rect.move_ip(0, 5)
-
                 if colisiona_con_obstaculo(self.rect):
                     self.rect = old_rect
                     
             if pressed_keys[K_LEFT] or pressed_keys[K_a]: 
                 self.rect.move_ip(-5, 0)
-                
                 if colisiona_con_obstaculo(self.rect):
                     self.rect = old_rect
                     
@@ -216,28 +233,24 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             # Movimiento rápido con Shift
             if pressed_keys[K_LSHIFT]:  # correr más rápido
                 old_rect = self.rect.copy()
-                
+
                 if pressed_keys[K_UP] or pressed_keys[K_w]: 
                     self.rect.move_ip(0, -5.5)
-                    
                     if colisiona_con_obstaculo(self.rect):
                         self.rect = old_rect
-                        
+
                 if pressed_keys[K_DOWN] or pressed_keys[K_s]: 
                     self.rect.move_ip(0, 5.5)
-                    
                     if colisiona_con_obstaculo(self.rect):
-                        self.rect = old_rect
-                        
+                        self.rect = old_rect    
+
                 if pressed_keys[K_LEFT] or pressed_keys[K_a]: 
-                    self.rect.move_ip(-5.5, 0)
-                    
+                    self.rect.move_ip(-5.5, 0)                   
                     if colisiona_con_obstaculo(self.rect):
-                        self.rect = old_rect
-                        
+                        self.rect = old_rect     
+
                 if pressed_keys[K_RIGHT] or pressed_keys[K_d]: 
-                    self.rect.move_ip(5.5, 0)
-                    
+                    self.rect.move_ip(5.5, 0) 
                     if colisiona_con_obstaculo(self.rect):
                         self.rect = old_rect
 
@@ -247,6 +260,15 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             self.surf = self.animacion.obtener_frame_actual()
 
             self.rect.clamp_ip(screen.get_rect())  # no salir de pantalla
+
+            # Drenaje de energía según movimiento
+            is_moving = any(pressed_keys[k] for k in (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_w, K_s, K_a, K_d))
+            is_sprinting = pressed_keys[K_LSHIFT] and is_moving and player.energy > 0
+
+            if is_moving:
+                drain_walk = 5.0    # energía por segundo caminando
+                drain_run  = 10.0    # energía por segundo corriendo
+                player.add_energy(-(drain_run if is_sprinting else drain_walk) * dt)
 
     # === Objeto interactivo ===
     class Objeto:
@@ -289,6 +311,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     running = True
     while running:
         clock.tick(FPS)
+        dt = clock.get_time() / 1000.0
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -373,7 +396,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
                 objeto_actual.encendido = False
                 super_boton_visible = False
                 objeto_actual = None
-                print("⚡ Objeto apagado ⚡")
+                player.add_energy(+10)  # recupera 10 puntos de energia
+                print("⚡ Objeto apagado: +10 energía ⚡")
 
             # === No hay campo de visión limitada ===
         
@@ -404,6 +428,15 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             # Dibujar barra de energia y boton de pausa
             screen.blit(barra_energia_atras, (30, 30))
+
+            player.draw_energy_bar(
+                screen,
+                x=30, y=30, w=barra_energia.get_width(), h=barra_energia.get_height(),
+                bg_img=barra_energia_atras,
+                fg_img=barra_energia,
+                color=ENERGIA_COLOR
+            )
+
             screen.blit(barra_energia, (30, 30))
 
             # Posición del mouse para hover
@@ -487,35 +520,13 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
         pygame.display.flip()
 
         # === Condiciones de fin de juego ===
-        if time_left <= 0:
-            snapshot = screen.copy()
-            paused_bg = make_blur(snapshot, factor=0.4, passes=2)
-
-            # Fondo (nivel) con blur
-            screen.blit(paused_bg, (0, 0))
-
-            # (Opcional) oscurecer un poco encima
-            overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 110))
-            screen.blit(overlay, (0, 0))
-
+        if time_left <= 0 or player.energy <= 0:
             screen.blit(pantalla_perdedor, (0,0))
             pygame.display.flip()
             pygame.time.delay(3000)
             return "niveles"
         
         elif all(not obj.encendido for obj in objetos):
-            snapshot = screen.copy()
-            paused_bg = make_blur(snapshot, factor=0.4, passes=2)
-            
-            # Fondo (nivel) con blur
-            screen.blit(paused_bg, (0, 0))
-
-            # (Opcional) oscurecer un poco encima
-            overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, 110))
-            screen.blit(overlay, (0, 0))
-
             screen.blit(pantalla_ganador, (0,0))
             pygame.display.flip()
             pygame.time.delay(3000)
