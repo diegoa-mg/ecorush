@@ -1,7 +1,9 @@
 import pygame
 from pathlib import Path
-from settings import WIDTH, HEIGHT, FPS, BLACK, WHITE, RED, YELLOW, load_img, make_hover_pair, make_blur
-# from settings2 import 
+from settings import WIDTH, HEIGHT, FPS, BLACK, WHITE, RED, YELLOW, ENERGIA_COLOR, load_img, make_hover_pair, make_blur
+from movimiento_de_personaje import AnimacionPersonaje
+from objetos_interactuables import GestorObjetosInteractuables
+from objetos_decorativos import GestorObjetosDecorativos
 
 def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     # === Importar teclas ===
@@ -17,9 +19,12 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     MAPA                = load_img("mapafinal.png")
     img_temporizador    = load_img("temporizador.png")
     img_advertencia     = load_img("advertencia_objetos.png")
+    barra_energia       = load_img("barra_energia.png")
+    barra_energia_atras = load_img("barra_energia_detras.png")
+    btn_pausa           = load_img("boton_pausa_juego.png")
 
-    # Objetos/muebles/aparatos
-    img_estante = load_img("estante.png")
+    pantalla_ganador    = load_img("ganador.png")
+    pantalla_perdedor   = load_img("perdedor.png")
 
     # Pausa
     titulo_pausa    = load_img("titulo_pausa.png")
@@ -35,11 +40,14 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     # Juego
     MAPA                = pygame.transform.scale(MAPA, (WIDTH, HEIGHT))
     img_boton_E         = pygame.transform.scale(img_boton_E, (50, 50))
-    img_temporizador    = pygame.transform.scale(img_temporizador, (180, 80))
+    img_temporizador    = pygame.transform.scale(img_temporizador, (144, 54))
     img_advertencia     = pygame.transform.scale(img_advertencia, (50, 50))
+    barra_energia       = pygame.transform.scale(barra_energia, (174, 51))
+    barra_energia_atras = pygame.transform.scale(barra_energia_atras, (174, 51))
+    btn_pausa           = pygame.transform.scale(btn_pausa, (51, 51))
 
-    # Objetos/muebles/aparatos
-    img_estante = pygame.transform.scale(img_estante, (100, 100)) 
+    pantalla_ganador    = pygame.transform.scale(pantalla_ganador, (WIDTH, HEIGHT))
+    pantalla_perdedor   = pygame.transform.scale(pantalla_perdedor, (WIDTH, HEIGHT))
 
     # Pausa
     titulo_pausa    = pygame.transform.scale(titulo_pausa, (646.66, 98))
@@ -52,36 +60,54 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     config_x     = pygame.transform.scale(config_x, (34, 33.33))
 
     # === Animacion de botones en pausa ===
+    btn_pausa_orig, btn_pausa_hover         = make_hover_pair(btn_pausa, 1.05)
+
     btn_continuar_orig, btn_continuar_hover = make_hover_pair(btn_continuar, 1.05)
     btn_config_orig, btn_config_hover       = make_hover_pair(btn_config, 1.05)
     btn_salir_orig, btn_salir_hover         = make_hover_pair(btn_salir, 1.05)
     config_x_orig, config_x_hover           = make_hover_pair(config_x, 1.05)
 
     # === Hitbox de botones ===
+    rect_pausa      = btn_pausa.get_rect(topleft=(1199, 30))
     rect_conti      = btn_continuar.get_rect(topleft=(489.335, 300))
     rect_config     = btn_config.get_rect(topleft=(489.335, 400))
     rect_salir      = btn_salir.get_rect(topleft=(489.335, 500))
     config_rect     = config.get_rect(center=(WIDTH//2, HEIGHT//2))
     config_x_rect   = config_x.get_rect(topright=(config_rect.right-20, config_rect.top+20))
-
-    # Crear una máscara de colisión para las áreas negras del mapa
-    MAPA_MASK = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-    for y in range(HEIGHT):
-        for x in range(WIDTH):
-            color = MAPA.get_at((x, y))
-            # Si el color es negro o muy cercano al negro (considerando transparencia)
-            if color[0] < 30 and color[1] < 30 and color[2] < 30:
-                MAPA_MASK.set_at((x, y), (255, 0, 0, 128))  # Marcar áreas negras
+    
+    # Inicializar gestor de objetos interactuables
+    assets_path = Path(__file__).parent / "assets"
+    gestor_objetos = GestorObjetosInteractuables(assets_path)
+    # Configurar modo de colocación de hitbox y offsets por objeto
+    gestor_objetos.configurar_modo_hitbox("centro")
+    gestor_objetos.configurar_offset_hitbox_por_objeto({"pcencendida": (2, -1)})
+    # Inicializar decorativos y crearlos según posiciones configuradas
+    gestor_decorativos = GestorObjetosDecorativos(assets_path)
+    decorativos = gestor_decorativos.crear_decorativos_por_defecto()
 
     # Fuente
     font = pygame.font.SysFont("Arial", 36)
 
+    # Crear una máscara de colisión desde el mapa original
+    # Crear superficie base sin transparencia
+    mapa_colision = MAPA.convert()
+
+    MASK_COLOR = (0, 0, 0)
+    THRESHOLD = 40  # tolerancia
+
+    # Crear una máscara vacía
+    MAPA_MASK = pygame.Mask((WIDTH, HEIGHT))
+
+    # Rellenar la máscara donde hay negro (o casi negro)
+    for y in range(HEIGHT):
+        for x in range(WIDTH):
+            color = mapa_colision.get_at((x, y))
+            # Si los tres canales son menores que el umbral => negro
+            if color[0] < THRESHOLD and color[1] < THRESHOLD and color[2] < THRESHOLD:
+                MAPA_MASK.set_at((x, y), 1)
+        
     # Función para verificar si una posición colisiona con áreas negras o el estante
     def colisiona_con_negro(rect):
-        # Verificar colisión con el estante primero
-        if rect.colliderect(estante_rect):
-            return True
-        
         # Verificar los cuatro puntos de las esquinas del rectángulo
         puntos_a_verificar = [
             (rect.left, rect.top),
@@ -92,139 +118,186 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
         ]
         
         for x, y in puntos_a_verificar:
-            # Asegurarse de que las coordenadas estén dentro de los límites
             if 0 <= x < WIDTH and 0 <= y < HEIGHT:
-                # Si el punto está en un área negra (marcada en rojo en la máscara)
-                color = MAPA_MASK.get_at((x, y))
-                if color[0] > 0:  # Si hay rojo en la máscara (área negra)
+                if MAPA_MASK.get_at((x, y)):
                     return True
+        return False
+
+    def choca_con_mapa(rect):
+        # Recorre el contorno del rect en pasos pequeños
+        step = 2
+        # lados horizontales
+        for x in range(rect.left, rect.right, step):
+            y1, y2 = rect.top, rect.bottom-1
+            if 0 <= x < WIDTH and 0 <= y1 < HEIGHT and MAPA_MASK.get_at((x, y1)): return True
+            if 0 <= x < WIDTH and 0 <= y2 < HEIGHT and MAPA_MASK.get_at((x, y2)): return True
+        # lados verticales
+        for y in range(rect.top, rect.bottom, step):
+            x1, x2 = rect.left, rect.right-1
+            if 0 <= x1 < WIDTH and 0 <= y < HEIGHT and MAPA_MASK.get_at((x1, y)): return True
+            if 0 <= x2 < WIDTH and 0 <= y < HEIGHT and MAPA_MASK.get_at((x2, y)): return True
+        return False
+    
+    def debug_dibujar_mask(screen, MAPA_MASK):
+        """Dibuja en rojo las zonas detectadas como colisión (paredes negras)."""
+        debug_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        for y in range(HEIGHT):
+            for x in range(WIDTH):
+                if MAPA_MASK.get_at((x, y)):
+                    debug_surface.set_at((x, y), (255, 0, 0, 80))  # rojo semitransparente
+        screen.blit(debug_surface, (0, 0))
+
+    def colisiona_con_obstaculo(rect):
+        # Colisión con paredes del mapa (negras)
+        for x in range(rect.left, rect.right, 5):
+            for y in range(rect.top, rect.bottom, 5):
+                if 0 <= x < WIDTH and 0 <= y < HEIGHT:
+                    if MAPA_MASK.get_at((x, y)):
+                        return True
+
+        # Objetos interactuables
+        for rb in gestor_objetos.obtener_rects_bloqueo():
+            if rect.colliderect(rb):
+                return True
+
+        # Objetos decorativos
+        for rb in gestor_decorativos.obtener_rects_bloqueo():
+            if rect.colliderect(rb):
+                return True
+
         return False
 
     # === Jugador ===
     class Player(pygame.sprite.Sprite):
         def __init__(self):
             super().__init__()
-            self.surf = pygame.Surface((40, 40))
-            self.surf.fill(WHITE)
+            # Inicializar animaciones
+            assets_path = Path(__file__).parent / "assets"
+            self.animacion = AnimacionPersonaje(assets_path)
+            
+            # Usar el primer frame como superficie inicial
+            self.surf = self.animacion.obtener_frame_actual()
             self.rect = self.surf.get_rect(center=(WIDTH//2, HEIGHT//2))
+
+            # ENERGÍA
+            self.energy = 100  
+            self.energy_max = 100 # MAX_ENERGY
+
+        def add_energy(self, amount: float):
+            self.energy = max(0, min(self.energy + amount, self.energy_max))
+
+        def draw_energy_bar(self, screen, x=30, y=30, w=174, h=51,
+                            bg_img=None, fg_img=None, color=ENERGIA_COLOR):
+            # fondo (detrás)
+            if bg_img:
+                screen.blit(bg_img, (x, y))
+            # barra rellena (un rectángulo recortado al ancho)
+            pct = self.energy / self.energy_max
+            inner_margin = 6  # ajusta al arte de tu barra
+            fill_rect = pygame.Rect(x + inner_margin, y + inner_margin,
+                                    int((w - inner_margin*2) * pct),
+                                    h - inner_margin*2)
+            pygame.draw.rect(screen, color, fill_rect, border_radius=4)
+            # marco (encima)
+            if fg_img:
+                screen.blit(fg_img, (x, y))
 
         def update(self, pressed_keys):
             # Guardar la posición actual para poder volver a ella si hay colisión
             old_rect = self.rect.copy()
             
+            # Obtener dirección y estado de movimiento para animaciones
+            direccion, esta_moviendose = self.animacion.obtener_direccion_movimiento(pressed_keys)
+            
             # Movimiento normal
             if pressed_keys[K_UP] or pressed_keys[K_w]: 
                 self.rect.move_ip(0, -5)
-                if colisiona_con_negro(self.rect):
+                if colisiona_con_obstaculo(self.rect):
                     self.rect = old_rect
                     
             if pressed_keys[K_DOWN] or pressed_keys[K_s]: 
                 self.rect.move_ip(0, 5)
-                if colisiona_con_negro(self.rect):
+                if colisiona_con_obstaculo(self.rect):
                     self.rect = old_rect
                     
             if pressed_keys[K_LEFT] or pressed_keys[K_a]: 
                 self.rect.move_ip(-5, 0)
-                if colisiona_con_negro(self.rect):
+                if colisiona_con_obstaculo(self.rect):
                     self.rect = old_rect
                     
             if pressed_keys[K_RIGHT] or pressed_keys[K_d]: 
                 self.rect.move_ip(5, 0)
-                if colisiona_con_negro(self.rect):
+                if colisiona_con_obstaculo(self.rect):
                     self.rect = old_rect
 
             # Movimiento rápido con Shift
             if pressed_keys[K_LSHIFT]:  # correr más rápido
                 old_rect = self.rect.copy()
-                
+
                 if pressed_keys[K_UP] or pressed_keys[K_w]: 
                     self.rect.move_ip(0, -5.5)
-                    if colisiona_con_negro(self.rect):
+                    if colisiona_con_obstaculo(self.rect):
                         self.rect = old_rect
-                        
+
                 if pressed_keys[K_DOWN] or pressed_keys[K_s]: 
                     self.rect.move_ip(0, 5.5)
-                    if colisiona_con_negro(self.rect):
-                        self.rect = old_rect
-                        
+                    if colisiona_con_obstaculo(self.rect):
+                        self.rect = old_rect    
+
                 if pressed_keys[K_LEFT] or pressed_keys[K_a]: 
-                    self.rect.move_ip(-5.5, 0)
-                    if colisiona_con_negro(self.rect):
-                        self.rect = old_rect
-                        
+                    self.rect.move_ip(-5.5, 0)                   
+                    if colisiona_con_obstaculo(self.rect):
+                        self.rect = old_rect     
+
                 if pressed_keys[K_RIGHT] or pressed_keys[K_d]: 
-                    self.rect.move_ip(5.5, 0)
-                    if colisiona_con_negro(self.rect):
+                    self.rect.move_ip(5.5, 0) 
+                    if colisiona_con_obstaculo(self.rect):
                         self.rect = old_rect
+
+            # Actualizar animación (incluyendo si está corriendo)
+            corriendo = pressed_keys[K_LSHIFT]
+            self.animacion.actualizar(direccion, esta_moviendose, corriendo)
+            self.surf = self.animacion.obtener_frame_actual()
 
             self.rect.clamp_ip(screen.get_rect())  # no salir de pantalla
 
+            # Drenaje de energía según movimiento
+            is_moving = any(pressed_keys[k] for k in (K_UP, K_DOWN, K_LEFT, K_RIGHT, K_w, K_s, K_a, K_d))
+            is_sprinting = pressed_keys[K_LSHIFT] and is_moving and player.energy > 0
+
+            if is_moving:
+                drain_walk = 5.0    # energía por segundo caminando
+                drain_run  = 10.0    # energía por segundo corriendo
+                player.add_energy(-(drain_run if is_sprinting else drain_walk) * dt)
+
     # === Objeto interactivo ===
-    # === Objeto interactivo con advertencia independiente ===
     class Objeto:
-        def __init__(self, x, y, w, h, tiempo_amarillo, tiempo_rojo):
+        def __init__(self, x, y, w, h):
             self.rect = pygame.Rect(x, y, w, h)
             self.encendido = True
-            self.start_time = pygame.time.get_ticks()
-            self.tiempo_amarillo = tiempo_amarillo
-            self.tiempo_rojo = tiempo_rojo
 
-        def draw(self, surface, total_pause_ms):
-            # Dibujar objeto normal
+        def draw(self, surface):
+            # Dibujar objeto - siempre amarillo cuando está encendido
             if self.encendido:
                 pygame.draw.rect(surface, YELLOW, self.rect)
             else:
                 pygame.draw.rect(surface, RED, self.rect)
 
-            # Calcular tiempo transcurrido
-            if self.encendido:
-                now = pygame.time.get_ticks() - total_pause_ms
-                elapsed = (now - self.start_time) // 1000
-
-                # Fase amarilla
-                if elapsed < self.tiempo_amarillo:
-                    temp = img_advertencia.copy()
-                    temp.fill((255, 255, 0, 180), None, pygame.BLEND_RGBA_MULT)
-                    surface.blit(temp, (self.rect.centerx - 30, self.rect.top - 70))
-
-                # Fase roja
-                elif self.tiempo_amarillo <= elapsed < self.tiempo_rojo:
-                    temp = img_advertencia.copy()
-                    temp.fill((255, 0, 0, 220), None, pygame.BLEND_RGBA_MULT)
-                    surface.blit(temp, (self.rect.centerx - 30, self.rect.top - 70))
-
-                # Pasado el tiempo rojo → desaparece solo
-                elif elapsed >= self.tiempo_rojo:
-                    self.encendido = False
-
     # Crear jugador
     player = Player()
 
-    # Crear hitbox del estante (ajustada para mejor colisión)
-    estante_x = WIDTH - img_estante.get_width() - 263  # 263 píxeles del borde derecho
-    estante_y = HEIGHT - img_estante.get_height() - 150  # 150 píxeles del borde inferior
-    # Hitbox más precisa: cubre el área sólida del estante
-    hitbox_margin = 7  # margen muy pequeño para colisión precisa
-    estante_rect = pygame.Rect(
-        estante_x + hitbox_margin, 
-        estante_y + hitbox_margin, 
-        img_estante.get_width() - (hitbox_margin * 2), 
-        img_estante.get_height() - (hitbox_margin * 2)
-    )
-
-    # Crear varios objetos
-    objetos = [
-        Objeto(300, 200, 80, 80, tiempo_amarillo=10, tiempo_rojo=15),  # 10s amarillo → 15s rojo → desaparece
-        Objeto(600, 400, 80, 80, tiempo_amarillo=20, tiempo_rojo=25),  # 20s amarillo → 25s rojo → desaparece
-        Objeto(900, 250, 80, 80, tiempo_amarillo=30, tiempo_rojo=35)   # 30s amarillo → 35s rojo → desaparece
-    ]
+    # Crear objetos interactuables con imágenes (32x32)
+    objetos = gestor_objetos.crear_objetos_por_defecto()
+    
+    # Mostrar objetos disponibles (opcional)
+    gestor_objetos.listar_objetos_disponibles()
 
     # Control de super botón
     super_boton_visible = False
     objeto_actual = None  # guarda el objeto con el que chocamos
 
     # === Temporizador ===
-    START_TIME = 3 * 60  # 3 minutos en segundos
+    START_TIME = 1 * 60  # 3 minutos en segundos
     start_ticks = pygame.time.get_ticks()
 
     # === Estado del juego ===
@@ -238,6 +311,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     running = True
     while running:
         clock.tick(FPS)
+        dt = clock.get_time() / 1000.0
 
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -245,7 +319,14 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             # === BOTONES PAUSA ===
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if game_state == "pausa":
+                if game_state == "juego":
+                    if rect_pausa.collidepoint(event.pos):
+                        snapshot = screen.copy()
+                        paused_bg = make_blur(snapshot, factor=0.4, passes=2)
+                        game_state = "pausa"
+                        pause_started = pygame.time.get_ticks() # <-- se marca inicio de pausa
+                
+                elif game_state == "pausa":
                     if rect_conti.collidepoint(event.pos):
                         print("Continuando el nivel...")
                         # Ajuste del temporizador al salir de pausa:
@@ -302,55 +383,71 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             color = WHITE if time_left > 30 else RED
             timer_text = font.render(f"{minutes:02}:{seconds:02}", True, color)
 
-            # === Detectar colisión con algún objeto ===
+           # === Detectar colisión con algún objeto ===
             super_boton_visible = False
-            for obj in objetos:
-                if player.rect.colliderect(obj.rect) and obj.encendido:
-                    super_boton_visible = True
-                    objeto_actual = obj
-                    break  # solo un objeto a la vez
+            hay_colision, objeto_colisionado = gestor_objetos.verificar_colision(player.rect)
+            
+            if hay_colision:
+                super_boton_visible = True
+                objeto_actual = objeto_colisionado
 
             # Si presiono E y hay un objeto actual → se apaga
             if super_boton_visible and pressed_keys[K_e]:
                 objeto_actual.encendido = False
                 super_boton_visible = False
                 objeto_actual = None
-                print("⚡ Objeto apagado ⚡")
+                player.add_energy(+10)  # recupera 10 puntos de energia
+                print("⚡ Objeto apagado: +10 energía ⚡")
 
             # === No hay campo de visión limitada ===
         
         # === DIBUJAR ===
         if game_state == "juego":
             screen.blit(MAPA, (0, 0))  # dibuja el mapa de fondo
-            
-            # Descomentar esta línea para ver la máscara de colisión durante el desarrollo
-            # screen.blit(MAPA_MASK, (0, 0))
-            
+
+            # Dibujar decorativos (muebles, alfombras, etc.)
+            gestor_decorativos.dibujar_todos(screen)
+
+            # (Estante removido: ahora no se dibuja ni carga)
+
+            # Dibujar todos los objetos interactuables
+            gestor_objetos.dibujar_todos(screen)
+
+            # Dibujar personaje
             screen.blit(player.surf, player.rect)
-
-            # Dibujar el estante en la parte inferior derecha
-            estante_x = WIDTH - img_estante.get_width() - 263 # 20 píxeles del borde derecho
-            estante_y = HEIGHT - img_estante.get_height() - 150 # 20 píxeles del borde inferior
-            screen.blit(img_estante, (estante_x, estante_y))
-
-            # BORRAR AL ELIMINAR LOS OBJETOS CON TIEMPO
-            for obj in objetos:
-                obj.draw(screen, total_pause_ms)
-
-            """
-            for obj in objetos:
-                obj.draw(screen)
-            """
 
             # Dibujar el temporizador arriba al centro
             # === Dibujar temporizador con fondo estilo ===
-            timer_rect = img_temporizador.get_rect(midtop=(WIDTH//2, 10))
+            timer_rect = img_temporizador.get_rect(midtop=(WIDTH//2, 30))
             screen.blit(img_temporizador, timer_rect.topleft)
 
             # Texto del tiempo (negro con borde blanco para efecto 2D)
             timer_str = f"{minutes:02}:{seconds:02}"
             base_text = font.render(timer_str, True, BLACK)   # texto negro
             outline = font.render(timer_str, True, WHITE)     # borde blanco
+
+            # Dibujar barra de energia y boton de pausa
+            screen.blit(barra_energia_atras, (30, 30))
+
+            player.draw_energy_bar(
+                screen,
+                x=30, y=30, w=barra_energia.get_width(), h=barra_energia.get_height(),
+                bg_img=barra_energia_atras,
+                fg_img=barra_energia,
+                color=ENERGIA_COLOR
+            )
+
+            screen.blit(barra_energia, (30, 30))
+
+            # Posición del mouse para hover
+            mouse_pos = pygame.mouse.get_pos()
+
+            # BOTON PAUSA
+            if rect_pausa.collidepoint(mouse_pos):
+                r = btn_pausa_hover.get_rect(center=rect_pausa.center)
+                screen.blit(btn_pausa_hover, r.topleft)
+            else:
+                screen.blit(btn_pausa_orig, rect_pausa.topleft)
 
             # Dibujar bordes alrededor (efecto 2D)
             for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
@@ -364,6 +461,11 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             if super_boton_visible:
                 boton_rect = img_boton_E.get_rect(midbottom=(player.rect.centerx, player.rect.top - 10))
                 screen.blit(img_boton_E, boton_rect.topleft)
+
+            # (Depuración) Mostrar máscara de colisión si presionas F1
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_F1]:
+                debug_dibujar_mask(screen, MAPA_MASK)
 
         elif game_state == "pausa":
             # Fondo (nivel) con blur
@@ -418,18 +520,14 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
         pygame.display.flip()
 
         # === Condiciones de fin de juego ===
-        if time_left <= 0:
-            end_text = font.render("PERDISTE", True, RED) # MENSAJE TEMPORAL
-            screen.fill(BLACK)
-            screen.blit(end_text, (WIDTH//2 - end_text.get_width()//2, HEIGHT//2))
+        if time_left <= 0 or player.energy <= 0:
+            screen.blit(pantalla_perdedor, (0,0))
             pygame.display.flip()
-            pygame.time.delay(2000)
+            pygame.time.delay(3000)
             return "niveles"
         
         elif all(not obj.encendido for obj in objetos):
-            end_text = font.render("GANASTE", True, WHITE) # MENSAJE TEMPORAL
-            screen.fill(BLACK)
-            screen.blit(end_text, (WIDTH//2 - end_text.get_width()//2, HEIGHT//2))
+            screen.blit(pantalla_ganador, (0,0))
             pygame.display.flip()
-            pygame.time.delay(2000)
+            pygame.time.delay(3000)
             return "niveles"
