@@ -17,14 +17,6 @@ TAMANOS_HITBOX_DECORATIVOS = {
 }
 
 
-# === Configuración editable de posiciones ===
-# Define aquí las coordenadas de cada decorativo por su nombre (sin .png)
-# Ejemplo:
-# POSICIONES_DECORATIVOS = {
-#     "alfombra1": (300, 500),
-#     "cajonera1": (100, 200),
-#     "espejo": (900, 120),
-# }
 POSICIONES_DECORATIVOS = {
     # Coordenadas por defecto (modifícalas a tu gusto)
     "alfombra1": (580, 300),

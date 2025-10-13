@@ -14,7 +14,7 @@ ENERGIA_COLOR= (255, 175, 0)
 
 # === Configurar la ventana ===
 FPS = 60 
-WIDTH, HEIGHT = 1280, 720
+WIDTH, HEIGHT = 1920, 1080
 
 # === Rutas relativas con pathlib ===
 # BASE_DIR: carpeta donde esta el archivo main.py
