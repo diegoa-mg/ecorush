@@ -13,18 +13,20 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     config_x     = load_img("config_x.png")
     tuto         = load_img("tuto.png")
     botones_tuto = load_img("botones_tutorial.png")
+    botones_config = load_img("botonesconfig.png")
 
     # === Escalar las imagenes ===
-    bg_prin    = pygame.transform.scale(bg_prin, (2560, 720))
-    titulo       = pygame.transform.scale(titulo, (1118, 178))
-    botoninicio  = pygame.transform.scale(botoninicio, (225.33, 226))
-    botonconfig  = pygame.transform.scale(botonconfig, (334.66, 85.33))
-    botontuto    = pygame.transform.scale(botontuto, (334.66, 85.33))
-    botonsalir   = pygame.transform.scale(botonsalir, (120, 118))
-    config       = pygame.transform.scale(config, (860, 488.66))
-    config_x     = pygame.transform.scale(config_x, (34, 33.33))
-    tuto         = pygame.transform.scale(tuto, (863.33, 485.33))
-    botones_tuto = pygame.transform.scale(botones_tuto, (618, 320.66))
+    bg_prin    = pygame.transform.scale(bg_prin, (3840, 1080))
+    titulo       = pygame.transform.scale(titulo, (1669.5, 250))
+    botoninicio  = pygame.transform.scale(botoninicio, (335, 333))
+    botonconfig  = pygame.transform.scale(botonconfig, (500, 123.5))
+    botontuto    = pygame.transform.scale(botontuto, (500, 123.5))
+    botonsalir   = pygame.transform.scale(botonsalir, (175.5, 174))
+    config       = pygame.transform.scale(config, (1290, 733.5))
+    config_x     = pygame.transform.scale(config_x, (48, 48.5))
+    tuto         = pygame.transform.scale(tuto, (1290, 733.5))
+    botones_tuto = pygame.transform.scale(botones_tuto, (924, 482.5))
+    botones_config = pygame.transform.scale(botones_config, (768, 259.5))
 
     # === Animacion de botones ===
     botoninicio_orig, botoninicio_hover = make_hover_pair(botoninicio, 1.05)
@@ -34,11 +36,10 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     config_x_orig, config_x_hover = make_hover_pair(config_x, 1.05)
 
     # === Definir rects de botones (hitboxes) ===
-    rect_inicio   = botoninicio.get_rect(topleft=(527, 310))
-    rect_config   = botonconfig.get_rect(topleft=(158, 380))
-    rect_tuto     = botontuto.get_rect(topleft=(793, 380))
-    rect_salir    = botonsalir.get_rect(topleft=(30, 572))
-    rect_regresar = config_x.get_rect(topleft=(244, 148.33))
+    rect_inicio   = botoninicio.get_rect(topleft=(792.5, 455))
+    rect_config   = botonconfig.get_rect(topleft=(242.5, 555))
+    rect_tuto     = botontuto.get_rect(topleft=(1177.5, 555))
+    rect_salir    = botonsalir.get_rect(topleft=(30, 876))
     config_rect   = config.get_rect(center=(WIDTH//2, HEIGHT//2))
     config_x_rect = config_x.get_rect(topright=(config_rect.right-20, config_rect.top+20))
     tuto_rect     = tuto.get_rect(center=(WIDTH//2, HEIGHT//2))
@@ -120,7 +121,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             menu_surface.fill((0, 0, 0))  # limpiar para el próximo frame
 
             # Centro del título a partir del topleft (81, 65)
-            title_center = (81 + titulo.get_width()//2, 65 + titulo.get_height()//2)
+            title_center = (125.25, 100)
             t_ms = pygame.time.get_ticks()
 
             # Titulo animado
@@ -168,7 +169,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             # Título animado sobre menu_surface
             t_ms = pygame.time.get_ticks()
-            title_center = (81 + titulo.get_width()//2, 65 + titulo.get_height()//2)
+            title_center = (125.25, 100)
             draw_title_animated(menu_surface, titulo, title_center, mode="bob", t_ms=t_ms, amp=6)
 
             menu_surface.blit(botoninicio, rect_inicio.topleft)
@@ -205,7 +206,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             
             # Título animado sobre menu_surface
             t_ms = pygame.time.get_ticks()
-            title_center = (81 + titulo.get_width()//2, 65 + titulo.get_height()//2)
+            title_center = (125.25, 100)
             draw_title_animated(menu_surface, titulo, title_center, mode="bob", t_ms=t_ms, amp=6)
             
             menu_surface.blit(botoninicio, rect_inicio.topleft)
@@ -230,7 +231,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             else:
                 screen.blit(config_x_orig, config_x_rect.topleft)
             
-            screen.blit(botones_tuto, (323, 245))
+            screen.blit(botones_tuto, (485, 350))
 
         pygame.display.flip()
     

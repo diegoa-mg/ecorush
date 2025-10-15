@@ -19,21 +19,21 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     personaje2_2 = load_img("selec_pjder2.png")
 
     # === Escalar las imagenes ===
-    bg_niv         = pygame.transform.scale(bg_niv, (2560, 720))
-    titulo_niv1     = pygame.transform.scale(titulo_niv1, (1118, 178))
+    bg_niv         = pygame.transform.scale(bg_niv, (3840, 1080))
+    titulo_niv1     = pygame.transform.scale(titulo_niv1, (1669.5, 250))
 
-    nivel_selector  = pygame.transform.scale(nivel_selector, (709.33, 294.66))
-    btn_sencillo     = pygame.transform.scale(btn_sencillo, (184.66, 70.66))
-    btn_extremo     = pygame.transform.scale(btn_extremo, (184.66, 70.66))
-    personaje1      = pygame.transform.scale(personaje1, (184.66, 116.66))
-    personaje2      = pygame.transform.scale(personaje2, (184.66, 116.66))
-    btn_jugar       = pygame.transform.scale(btn_jugar, (100, 100))
-    nivel_x         = pygame.transform.scale(nivel_x, (34, 33.33))
+    nivel_selector  = pygame.transform.scale(nivel_selector, (1061, 437))
+    btn_sencillo     = pygame.transform.scale(btn_sencillo, (276, 105.5))
+    btn_extremo     = pygame.transform.scale(btn_extremo, (276, 105.5))
+    personaje1      = pygame.transform.scale(personaje1, (276, 174.5))
+    personaje2      = pygame.transform.scale(personaje2, (276, 174.5))
+    btn_jugar       = pygame.transform.scale(btn_jugar, (146.5, 146.5))
+    nivel_x         = pygame.transform.scale(nivel_x, (48, 48))
 
-    btn_sencillo2 = pygame.transform.scale(btn_sencillo2, (184.66, 70.66))
-    btn_extremo2  = pygame.transform.scale(btn_extremo2, (184.66, 70.66))
-    personaje1_2      = pygame.transform.scale(personaje1_2, (184.66, 116.66))
-    personaje2_2      = pygame.transform.scale(personaje2_2, (184.66, 116.66))
+    btn_sencillo2 = pygame.transform.scale(btn_sencillo2, (276, 105.5))
+    btn_extremo2  = pygame.transform.scale(btn_extremo2, (276, 105.5))
+    personaje1_2      = pygame.transform.scale(personaje1_2, (276, 174.5))
+    personaje2_2      = pygame.transform.scale(personaje2_2, (276, 174.5))
 
     # === BOTONES ANIMADOS ===
     btn_sencillo_orig, btn_sencillo_hover = make_hover_pair(btn_sencillo, 1.05)
@@ -44,13 +44,13 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     nivel_x_orig, nivel_x_hover = make_hover_pair(nivel_x, 1.05)
 
     # === Definir rects de botones (hitboxes) ===
-    nivel_selector_rect = nivel_selector.get_rect(topleft=(285.335, 300))
-    rect_sencillo = btn_sencillo.get_rect(topleft=(480, 330))
-    rect_extremo = btn_extremo.get_rect(topleft=(680, 330))
-    rect_personaje1 = personaje1.get_rect(topleft=(480, 430))
-    rect_personaje2 = personaje2.get_rect(topleft=(680, 430))
-    rect_jugar = btn_jugar.get_rect(bottomright=(980, 490))
-    nivel_x_rect = nivel_x.get_rect(topleft=(945, 315))
+    nivel_selector_rect = nivel_selector.get_rect(topleft=(429.5, 455))
+    rect_sencillo = btn_sencillo.get_rect(topleft=(710, 500))
+    rect_extremo = btn_extremo.get_rect(topleft=(1010, 500))
+    rect_personaje1 = personaje1.get_rect(topleft=(710, 650))
+    rect_personaje2 = personaje2.get_rect(topleft=(1010, 650))
+    rect_jugar = btn_jugar.get_rect(topleft=(1320, 590))
+    nivel_x_rect = nivel_x.get_rect(topleft=(1412.5, 485))
     rect_sencillo2 = btn_sencillo2.get_rect(topleft=(480, 330))
     rect_extremo2 = btn_extremo2.get_rect(topleft=(680, 330))
     rect_personaje1_2 = personaje1_2.get_rect(topleft=(480, 430))
@@ -132,7 +132,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             menu_surface.fill((0, 0, 0))
 
             # Titulo
-            screen.blit(titulo_niv1, (81, 65))
+            screen.blit(titulo_niv1, (125.25, 100))
 
             # Ventana azul del selector
             screen.blit(nivel_selector, nivel_selector_rect.topleft)
