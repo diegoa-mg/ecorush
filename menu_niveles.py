@@ -14,15 +14,15 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     config_x     = load_img("config_x.png")
 
     # === Escalar las imagenes ===
-    bg_niv         = pygame.transform.scale(bg_niv, (2560, 720))
-    titulo_niveles  = pygame.transform.scale(titulo_niveles, (1118, 178))
-    boton_nivel1    = pygame.transform.scale(boton_nivel1, (312.66, 130))
-    boton_nivel2    = pygame.transform.scale(boton_nivel2, (312.66, 130))
-    boton_nivel3    = pygame.transform.scale(boton_nivel3, (312.66, 130))
-    boton_volver    = pygame.transform.scale(boton_volver, (116.66, 118.66))
-    boton_config_niv = pygame.transform.scale(boton_config_niv, (119.33, 118.66))
-    config       = pygame.transform.scale(config, (860, 488.66))
-    config_x     = pygame.transform.scale(config_x, (34, 33.33))
+    bg_niv         = pygame.transform.scale(bg_niv, (3840, 1080))
+    titulo_niveles  = pygame.transform.scale(titulo_niveles, (1669.5, 250))
+    boton_nivel1    = pygame.transform.scale(boton_nivel1, (466.5, 192.5))
+    boton_nivel2    = pygame.transform.scale(boton_nivel2, (466.5, 192.5))
+    boton_nivel3    = pygame.transform.scale(boton_nivel3, (466.5, 192.5))
+    boton_volver    = pygame.transform.scale(boton_volver, (175, 174.5))
+    boton_config_niv = pygame.transform.scale(boton_config_niv, (175.5, 175))
+    config       = pygame.transform.scale(config, (1290, 733.5))
+    config_x     = pygame.transform.scale(config_x, (48, 48.5))
 
     # === Animacion de botones ===
     boton_nivel1_orig, boton_nivel1_hover = make_hover_pair(boton_nivel1, 1.05)
@@ -33,11 +33,11 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     config_x_orig, config_x_hover = make_hover_pair(config_x, 1.05)
 
     # === Definir rects de botones (hitboxes) ===
-    rect_nivel1 = boton_nivel1.get_rect(topleft=(141, 355))
-    rect_nivel2 = boton_nivel2.get_rect(topleft=(483.67, 355))
-    rect_nivel3 = boton_nivel3.get_rect(topleft=(826.33, 355))
-    rect_volver = boton_volver.get_rect(topleft=(30, 572)) # Esquina inferior izquierda
-    rect_config_niv = boton_config_niv.get_rect(topleft=(1130.67, 572))  # Esquina inferior derecha
+    rect_nivel1 = boton_nivel1.get_rect(topleft=(210.25, 545))
+    rect_nivel2 = boton_nivel2.get_rect(topleft=(726.75, 545))
+    rect_nivel3 = boton_nivel3.get_rect(topleft=(1243.25, 545))
+    rect_volver = boton_volver.get_rect(topleft=(30, 875.5)) # Esquina inferior izquierda
+    rect_config_niv = boton_config_niv.get_rect(topleft=(1714.5, 875.5))  # Esquina inferior derecha
     config_rect   = config.get_rect(center=(WIDTH//2, HEIGHT//2))
     config_x_rect = config_x.get_rect(topright=(config_rect.right-20, config_rect.top+20))
 
@@ -115,7 +115,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             menu_surface.fill((0, 0, 0))
             
             # Titulo
-            screen.blit(titulo_niveles, (81, 65))
+            screen.blit(titulo_niveles, (125.25, 100))
 
             # Posición del mouse para hover
             mouse_pos = pygame.mouse.get_pos()
@@ -165,7 +165,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             # Poner blur al menu principal
             menu_surface.blit(bg_niv, (bg_niv_x, 0))
             menu_surface.blit(bg_niv, (bg_niv_x + bg_niv_width, 0))
-            menu_surface.blit(titulo_niveles, (81, 65))
+            menu_surface.blit(titulo_niveles, (125.25, 100))
             menu_surface.blit(boton_nivel1, rect_nivel1.topleft)
             menu_surface.blit(boton_nivel2, rect_nivel2.topleft)
             menu_surface.blit(boton_nivel3, rect_nivel3.topleft)

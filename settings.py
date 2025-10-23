@@ -14,7 +14,7 @@ ENERGIA_COLOR= (255, 175, 0)
 
 # === Configurar la ventana ===
 FPS = 60 
-WIDTH, HEIGHT = 1280, 720
+WIDTH, HEIGHT = 1920, 1080
 
 # === Rutas relativas con pathlib ===
 # BASE_DIR: carpeta donde esta el archivo main.py
@@ -40,7 +40,7 @@ def draw_title_animated(screen, base_surf, center_pos, mode="bob", t_ms=0, amp=1
     t = t_ms / 750.0
 
     surf = base_surf
-    rect = surf.get_rect(center=center_pos)
+    rect = surf.get_rect(topleft=center_pos)
 
     if mode == "bob":
         dy = int(math.sin(t * 2.5) * amp)  # velocidad 2 Hz aprox.

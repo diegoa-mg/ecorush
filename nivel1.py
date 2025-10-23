@@ -39,25 +39,25 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     # === Escalar imagenes ===
     # Juego
     MAPA                = pygame.transform.scale(MAPA, (WIDTH, HEIGHT))
-    img_boton_E         = pygame.transform.scale(img_boton_E, (50, 50))
-    img_temporizador    = pygame.transform.scale(img_temporizador, (144, 54))
-    img_advertencia     = pygame.transform.scale(img_advertencia, (50, 50))
-    barra_energia       = pygame.transform.scale(barra_energia, (174, 51))
-    barra_energia_atras = pygame.transform.scale(barra_energia_atras, (174, 51))
-    btn_pausa           = pygame.transform.scale(btn_pausa, (51, 51))
+    img_boton_E         = pygame.transform.scale(img_boton_E, (100, 100))
+    img_temporizador    = pygame.transform.scale(img_temporizador, (288, 108))
+    img_advertencia     = pygame.transform.scale(img_advertencia, (150, 150))
+    barra_energia       = pygame.transform.scale(barra_energia, (348, 102))
+    barra_energia_atras = pygame.transform.scale(barra_energia_atras, (348, 102))
+    btn_pausa           = pygame.transform.scale(btn_pausa, (102, 102))
 
     pantalla_ganador    = pygame.transform.scale(pantalla_ganador, (WIDTH, HEIGHT))
     pantalla_perdedor   = pygame.transform.scale(pantalla_perdedor, (WIDTH, HEIGHT))
 
     # Pausa
-    titulo_pausa    = pygame.transform.scale(titulo_pausa, (646.66, 98))
-    btn_continuar   = pygame.transform.scale(btn_continuar, (301.33, 76))
-    btn_config      = pygame.transform.scale(btn_config, (301.33, 76))
-    btn_salir       = pygame.transform.scale(btn_salir, (301.33, 76))
+    titulo_pausa    = pygame.transform.scale(titulo_pausa, (969, 146.5))
+    btn_continuar   = pygame.transform.scale(btn_continuar, (454, 113.5))
+    btn_config      = pygame.transform.scale(btn_config, (454, 113.5))
+    btn_salir       = pygame.transform.scale(btn_salir, (454, 113.5))
 
     # Config
-    config       = pygame.transform.scale(config, (860, 488.66))
-    config_x     = pygame.transform.scale(config_x, (34, 33.33))
+    config       = pygame.transform.scale(config, (1290, 733.5))
+    config_x     = pygame.transform.scale(config_x, (48, 48.5))
 
     # === Animacion de botones en pausa ===
     btn_pausa_orig, btn_pausa_hover         = make_hover_pair(btn_pausa, 1.05)
@@ -68,10 +68,10 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     config_x_orig, config_x_hover           = make_hover_pair(config_x, 1.05)
 
     # === Hitbox de botones ===
-    rect_pausa      = btn_pausa.get_rect(topleft=(1199, 30))
-    rect_conti      = btn_continuar.get_rect(topleft=(489.335, 300))
-    rect_config     = btn_config.get_rect(topleft=(489.335, 400))
-    rect_salir      = btn_salir.get_rect(topleft=(489.335, 500))
+    rect_pausa      = btn_pausa.get_rect(topleft=(1788, 50))
+    rect_conti      = btn_continuar.get_rect(topleft=(733, 450))
+    rect_config     = btn_config.get_rect(topleft=(733, 600))
+    rect_salir      = btn_salir.get_rect(topleft=(733, 750))
     config_rect     = config.get_rect(center=(WIDTH//2, HEIGHT//2))
     config_x_rect   = config_x.get_rect(topright=(config_rect.right-20, config_rect.top+20))
     
@@ -86,7 +86,8 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
     decorativos = gestor_decorativos.crear_decorativos_por_defecto()
 
     # Fuente
-    font = pygame.font.SysFont("Arial", 36)
+    FONT_PATH = Path(__file__).parent / "assets" / "fonts" / "horizon.otf"
+    font = pygame.font.Font(str(FONT_PATH), 40)  # tamaño 
 
     # Crear una máscara de colisión desde el mapa original
     # Crear superficie base sin transparencia
@@ -380,7 +381,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             minutes = time_left // 60
             seconds = time_left % 60
-            color = WHITE if time_left > 30 else RED
+            color = WHITE if time_left > 15 else RED
             timer_text = font.render(f"{minutes:02}:{seconds:02}", True, color)
 
            # === Detectar colisión con algún objeto ===
@@ -418,26 +419,25 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
 
             # Dibujar el temporizador arriba al centro
             # === Dibujar temporizador con fondo estilo ===
-            timer_rect = img_temporizador.get_rect(midtop=(WIDTH//2, 30))
+            timer_rect = img_temporizador.get_rect(midtop=(WIDTH//2, 50))
             screen.blit(img_temporizador, timer_rect.topleft)
 
             # Texto del tiempo (negro con borde blanco para efecto 2D)
             timer_str = f"{minutes:02}:{seconds:02}"
-            base_text = font.render(timer_str, True, BLACK)   # texto negro
-            outline = font.render(timer_str, True, WHITE)     # borde blanco
+            base_text = font.render(timer_str, True, WHITE)   # texto negro
 
             # Dibujar barra de energia y boton de pausa
-            screen.blit(barra_energia_atras, (30, 30))
+            screen.blit(barra_energia_atras, (50, 50))
 
             player.draw_energy_bar(
                 screen,
-                x=30, y=30, w=barra_energia.get_width(), h=barra_energia.get_height(),
+                x=50, y=50, w=barra_energia.get_width(), h=barra_energia.get_height(),
                 bg_img=barra_energia_atras,
                 fg_img=barra_energia,
                 color=ENERGIA_COLOR
             )
 
-            screen.blit(barra_energia, (30, 30))
+            screen.blit(barra_energia, (50, 50))
 
             # Posición del mouse para hover
             mouse_pos = pygame.mouse.get_pos()
@@ -449,12 +449,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             else:
                 screen.blit(btn_pausa_orig, rect_pausa.topleft)
 
-            # Dibujar bordes alrededor (efecto 2D)
-            for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
-                screen.blit(outline, (timer_rect.centerx - outline.get_width()//2 + dx,
-                                    timer_rect.centery - outline.get_height()//2 + dy))
-
-            # Dibujar el texto principal
+            # Dibujar el texto principal del timer
             screen.blit(base_text, (timer_rect.centerx - base_text.get_width()//2,
                                     timer_rect.centery - base_text.get_height()//2))
 
@@ -477,7 +472,7 @@ def run(screen: pygame.Surface, clock: pygame.time.Clock) -> str:
             screen.blit(overlay, (0, 0))
 
             # Titulo 
-            screen.blit(titulo_pausa, (316.67, 150))
+            screen.blit(titulo_pausa, (475.5, 250))
 
             # Posición del mouse para hover
             mouse_pos = pygame.mouse.get_pos()
